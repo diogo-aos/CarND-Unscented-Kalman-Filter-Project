@@ -3,6 +3,8 @@ Self-Driving Car Engineer Nanodegree Program
 
 In this project I use an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy LIDAR and radar measurements.
 
+## Chosing process noise values
+
 One of the challenges of the project was to find appropriate process noise values for the longitudinal acceleration and yaw acceleration. I started with standard deviation values for the yaw acceleration in the interval of [Pi/8, Pi/32] and for the longitudinal acceleration in the interval [2-10]. In the end, I chose Pi/16 rad/s.s for the yaw acceleration standard deviation and 3 m/s.s for the longitudinal acceleration.
 
 Considering the above yaw acceleration standard deviation, 95% of samples are within a yaw acceleration of 2*Pi/16 = 0.3927 rad/s.s. After 1 s, starting from 0 rad/s, the yaw velocity would be 0.3927 rad/s and full circle would be completed in 16.0 s, resulting in a tangential velocity for a radius of 16 m of 6.2832 m/s.
@@ -11,89 +13,78 @@ After 1 s, starting from 0.3927 rad/s, the yaw velocity would be 0.7854 rad/s an
 
 The longitudinal acceleration for this change would be 6.2832 m/s.s. Since 95% of samples are within a longitudinal acceleration of 6 m/s.s, the value chosen for the longitudinal acceleration standard deviation is appropriate.
 
+## Simulation results
+
+# Using both sensors
+
+It can be observed that the error (Root Mean Squared Error) of all variables is below the threshold at the end of the simulation, with the exception of the the position in the x axis, which is slightly above but with a seemingly converging behaviour. The final errors in the end of the simulation were:
+
+```
+'         x         y      vx      vy
+RMSE = [0.0953, 0.0963, 0.3424, 0.2520]
+```
+
+![RMSE for target using both sensors](report/handin_both/rmse.png)
+RMSE values for the target's position and velocity. The yellow line represents the acceptance threshold.
+
+The Normalized Innovation Squared (NIS) was a useful tool to validate the chosen process noise values. For both the radar and LIDAR, 4.8% of the NIS values were above the threshold, which was chosen to be 7.815 for the radar and 5.991 for the LIDAR, since they had different number of degrees of freedom. This is an appropriate result, since according to the chi-squared distribution, the threshold values chosen above are for a probability of 5%.
+
+![RMSE for target using both sensors](report/handin_both/nis.png)
+NIS values for both radar (left) and LIDAR (right) measurements.
+
+![RMSE for target using both sensors](report/handin_both/nis_2.png)
+NIS values for both radar (left) and LIDAR (right) measurements. The first sample of the radar plot was ignored for a clearer observation of the remaining values' magnitude.
+
+# Using radar only
+As it would be expected, the error for using only the radar is larger than when using both sensors. The error in the end of the simulation for the various variables was:
+
+```
+'         x         y      vx      vy
+RMSE = [0.1937, 0.2875, 0.4865, 0.4710]
+```
 
 
-This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see [this concept in the classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/16cf4a78-4fc7-49e1-8621-3450ca938b77) for the required version and installation scripts.
-
-Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
-
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./UnscentedKF
-
-Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
-
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, src/ukf.h, tools.cpp, and tools.h
-
-The program main.cpp has already been filled out, but feel free to modify it.
-
-Here is the main protcol that main.cpp uses for uWebSocketIO in communicating with the simulator.
+![RMSE for target using both sensors](report/handin_radar/rmse.png)
+RMSE values for the target's position and velocity. The yellow line represents the acceptance threshold.
 
 
-INPUT: values provided by the simulator to the c++ program
+Around 6.6% of the NIS values of the radar updates were above the defined threshold. This value is still close to the the 5% of the chi-squared distribution. This value is also higher than what was observed for the radar samples when sensor fusion was being employed. This is not surprising since the accuracy of the radar updates, over time, is also benefited by information from the LIDAR since the base prediction includes that information.
 
-["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
+![RMSE for target using both sensors](report/handin_radar/nis.png)
+NIS values for both radar (left) and LIDAR (right) measurements.
 
+![RMSE for target using both sensors](report/handin_radar/nis_2.png)
+NIS values for radar (left) measurements. The first 16 samples of the radar plot were ignored for a clearer observation of the remaining values' magnitude.
 
-OUTPUT: values provided by the c++ program to the simulator
+# Using LIDAR only
 
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
+Again, as expected, the error for using only the LIDAR is larger than when using both sensors. The error in the end of the simulation for the various variables was:
 
----
+```
+'         x         y      vx      vy
+RMSE = [0.1569, 0.1104, 0.5665, 0.2621]
+```
 
-## Other Important Dependencies
-* cmake >= 3.5
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
+![RMSE for target using both sensors](report/handin_lidar/rmse.png)
+RMSE values for the target's position and velocity. The yellow line represents the acceptance threshold.
 
-## Basic Build Instructions
+Around 7.2% of the NIS values of the LIDAR updates were above the defined threshold. The observation made for the NIS values of the radar updates is also applicable here. During sensor fusion, updates from each sensor benefit from information from the other sensors.
 
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./UnscentedKF` Previous versions use i/o from text files.  The current state uses i/o
-from the simulator.
+![RMSE for target using both sensors](report/handin_lidar/nis.png)
+NIS values for LIDAR (right).
 
-## Editor Settings
+## Comparisson with the results from the Extended Kalman Filter project
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+The errors at the end of the simulation using the EKF from last project were:
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+```
+'         x    y    vx    vy
+RMSE = [.0973, .0855, 0.4513, 0.4399]
+```
 
-## Code Style
+```
+'         x         y      vx      vy
+RMSE = [0.0953, 0.0963, 0.3424, 0.2520]
+```
 
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
-
-## Project Instructions and Rubric
-
-This information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/c3eb3583-17b2-4d83-abf7-d852ae1b9fff/concepts/f437b8b0-f2d8-43b0-9662-72ac4e4029c1)
-for instructions and the project rubric.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+The position error is similar on both filters, but the velocity error is larger with the EKF. This can be explained by both the effect on using a different technique to deal with the nonlinearity of the model and also on the switch from the constant velocity model (CV) to the constant turn rate and velocity magnitude model (CTRV).
