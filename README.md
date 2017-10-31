@@ -3,7 +3,13 @@ Self-Driving Car Engineer Nanodegree Program
 
 In this project I use an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy LIDAR and radar measurements.
 
-One of the challenges of the project was to find appropriate process noise values for the longitudinal acceleration and yaw acceleration. I started 
+One of the challenges of the project was to find appropriate process noise values for the longitudinal acceleration and yaw acceleration. I started with standard deviation values for the yaw acceleration in the interval of [Pi/8, Pi/32] and for the longitudinal acceleration in the interval [2-10]. In the end, I chose Pi/16 rad/s.s for the yaw acceleration standard deviation and 3 m/s.s for the longitudinal acceleration.
+
+Considering the above yaw acceleration standard deviation, 95% of samples are within a yaw acceleration of 2*Pi/16 = 0.3927 rad/s.s. After 1 s, starting from 0 rad/s, the yaw velocity would be 0.3927 rad/s and full circle would be completed in 16.0 s, resulting in a tangential velocity for a radius of 16 m of 6.2832 m/s.
+
+After 1 s, starting from 0.3927 rad/s, the yaw velocity would be 0.7854 rad/s and a full circle would be completed in 8.0 s, resulting in a tangential velocity for a radius of 16 m of 12.5664 m/s
+
+The longitudinal acceleration for this change would be 6.2832 m/s.s. Since 95% of samples are within a longitudinal acceleration of 6 m/s.s, the value chosen for the longitudinal acceleration standard deviation is appropriate.
 
 
 
