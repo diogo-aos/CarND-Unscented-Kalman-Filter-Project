@@ -1,0 +1,12 @@
+using lidar: True
+using radar: False
+noise a: 3.000000
+noise yawdd: 0.196300
+
+last rmse for px is 0.156981
+last rmse for py is 0.110453
+last rmse for vx is 0.566587
+last rmse for vy is 0.262187
+
+lidar samples above threshold:  0.0724346076459
+total samples above threshold:  0.0724346076459

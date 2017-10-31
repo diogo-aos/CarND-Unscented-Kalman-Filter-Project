@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
           // save sample in file
           if (is_init){
             FILE *fp = fopen("results.csv", "a");
+            cout << "rmse = " << RMSE << endl;
             // store rmse
             fprintf(fp, "%lf,%lf,%lf,%lf,", RMSE(0), RMSE(1), RMSE(2), RMSE(3));
             // store ground truth

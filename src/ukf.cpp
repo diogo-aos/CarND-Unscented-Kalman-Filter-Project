@@ -87,6 +87,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
+    cout << "using LIDAR: " << use_laser_ << "\tusing radar: " << use_radar_ << endl;
+    cout << "std_a: " << std_a_ << "\tstd_yawdd: " << std_yawdd_ << endl;
     // first measurement
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
       /**
