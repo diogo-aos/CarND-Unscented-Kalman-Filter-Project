@@ -46,27 +46,28 @@ int main(int argc, char *argv[])
   double noise_a, noise_yawdd;
   int use_lidar, use_radar;
 
-  if (argc != 5){
+  if (argc == 5){
+    noise_a = atof(argv[1]); noise_yawdd = atof(argv[2]);
+    use_lidar = atoi(argv[3]); use_radar = atoi(argv[4]);
+    ukf.std_a_ = noise_a;
+    ukf.std_yawdd_ = noise_yawdd;
+    ukf.use_laser_ = (use_lidar == 0) ? false : true;
+    ukf.use_radar_ = (use_radar == 0) ? false : true;
+  }
+  else if(argc > 1) {
     cout << "correct usage:" << endl;
     cout << "    ./UnscentedKF noise_a noise_yawdd use_lidar use_radar" << endl;
     cout << "    noise_a noise_yawdd are real numbers" << endl;
     cout << "    use_lidar use_radar : 1 for use, 0 for not use" << endl;
+    cout << "    You can also run without any parameters." << endl;
     return 1;
   }
 
-
   fp = fopen("results.csv", "w");
-  noise_a = atof(argv[1]); noise_yawdd = atof(argv[2]);
-  use_lidar = atoi(argv[3]); use_radar = atoi(argv[4]);
-  fprintf(fp, "%lf,%lf,%d,%d\n", noise_a, noise_yawdd, use_lidar, use_radar);
+  fprintf(fp, "%lf,%lf,%d,%d\n", ukf.std_a_, ukf.std_yawdd_, ukf.use_laser_, ukf.use_radar_);
   fclose(fp);
 
-  ukf.std_a_ = noise_a;
-  ukf.std_yawdd_ = noise_yawdd;
-  ukf.use_laser_ = (use_lidar == 0) ? false : true;
-  ukf.use_radar_ = (use_radar == 0) ? false : true;
-
-  printf("use lidar: %d\tuse radar: %d\n", use_lidar, use_radar);
+  printf("use lidar: %d\tuse radar: %d\n", ukf.use_laser_, ukf.use_radar_);
   printf("std_a = %lf\tstd_yawdd = %lf\n", ukf.std_a_, ukf.std_yawdd_);
 
   h.onMessage([&ukf,&tools,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
