@@ -34,7 +34,15 @@ UKF::UKF() {
   x_ = VectorXd(n_x_);
 
   // initial covariance matrix
+  //state covariance matrix P
+
   P_ = MatrixXd(n_x_, n_x_);
+  P_.fill(0.0);
+  P_(0, 0) = 1.0;
+  P_(1, 1) = 1.0;
+  P_(2, 2) = 1.0;
+  P_(3, 3) = 1.0;
+  P_(4, 4) = 1.0;
 
 
   // TODO: change std_a_ and std_yawdd_
@@ -137,6 +145,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    //compute the time elapsed between the current and previous measurements
    float dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
    previous_timestamp_ = meas_package.timestamp_;
+   if (dt == 0.0) dt = 0.0001;  // add numerical stability
 
    Prediction(dt);
 
@@ -169,8 +178,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   // cout << "Update | result " << endl;
 
   // print the output
-  // cout << "x_ = " << x_ << endl;
-  // cout << "P_ = " << P_ << endl;
+  cout << "x_ = " << x_ << endl;
+  cout << "P_ = " << P_ << endl;
 }
 
 /**
